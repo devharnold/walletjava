@@ -1,14 +1,21 @@
 # **EARLWALL**
 **Proposed agenda**
 
-This project is focused on building a platform that supports P2P payments, wallet management, and Ethereum integration. The backend uses PostgreSQL for database management, ensuring scalability, security, and performance.
+This project is focused on building a platform that supports P2P payments, wallet management, and Ethereum integration. The backend is based on Java SpringBoot to create the micro-service architechturee and  PostgreSQL for database management, ensuring scalability, security, and performance.
 
 ---
+
+### How to start project development ###
+I am using VsCode cause that's the IDE i have setup for my development already
+
+On VsCode, make sure that the **Spring Boot Extension Pack** is already installed.
+Afterwards, press `ctrl + shift + P` and do the following:
+
 
 ## **Common User Credentials for Signup**
 
 Here’s a list of essential credentials needed for a user to sign up:
-
+>
 1. **Full Name**
     - **Purpose**: For personal identification and to personalize the user experience.
    
