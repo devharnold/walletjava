@@ -1,24 +1,35 @@
+/**
+ * Virtual card class
+ * Simulates the traditional card but this is meant for online payments
+ * Expiry date should be set after 1 year per every card.
+ * Every card will/must have a unique card number
+ */
+
 package com.fintech.fintechapp.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
 @Entity
-@Table(name="transactions")
-public class Transaction {
+@Table(name="virtualcards")
+public class VirtualCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String transactionId; //Unique transaction id for every transaction that takes place
+    private String virtualCardNumber;
 
     @Column(nullable = false)
-    private Long userId;
+    private Long userId; // User that holds the specific card
+
+    @Column(nullable = false)
+    private String currency;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal amount;
+    private BigDecimal balance; // the total funds available in that card
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -26,11 +37,10 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Transaction() {
+    public VirtualCard() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
     // getters and setters
     public Long getId() {
         return id;
@@ -38,31 +48,19 @@ public class Transaction {
     public void setId(Long id) {
         this.id = id;
     }
-    public String getTransactionId() {
-        return transactionId;
+    public String getCurrency() {
+        return currency;
     }
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public String getVirtualCardNumber() {
+        return virtualCardNumber;
     }
-    public Long getUserId() {
-        return userId;
-    }
-    public BigDecimal getAmount() {
-        return amount;
-    }
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public BigDecimal getBalance() {
+        return balance;
     }
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

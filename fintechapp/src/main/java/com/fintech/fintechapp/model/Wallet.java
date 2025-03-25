@@ -15,10 +15,11 @@ public class Wallet {
     private String walletId; // Unique wallet identifier
 
     @Column(nullable = false)
-    private String currency;
-
-    @Column(nullable = false)
     private Long userId; //User who owns the wallet
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Currency currency;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
@@ -33,6 +34,7 @@ public class Wallet {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
     //getters and setters
     public Long getId() {
         return id;
@@ -46,11 +48,16 @@ public class Wallet {
     public void setWalletId(String walletId) {
         this.walletId = walletId;
     }
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
+
     public void setCurrency(String currency) {
-        this.currency = currency;
+        try {
+            this.currency = Currency.valueOf(currency.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid currency type: " + currency);
+        }
     }
     public Long getUserId() {
         return userId;
