@@ -19,22 +19,25 @@ import javax.validation.constratints.NotNull;
 import com.fintech.fintechapp.model.Wallet;
 import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.service.WalletService;
+import com.fintech.fintechapp.repository.WalletRepository;
 
 @RestController
 @RequestMapping("/api/wallets")
 public class WalletController {
     @Autowired
+    //private WalletService walletService;
+    private WalletRepository walletRepository;
     private WalletService walletService;
 
     @PostMapping
     public ResponseEntity<Wallet> createWallet(@RequestBody Wallet wallet) {
-        Wallet createdWallet = walletService.createWallet(wallet);
+        Wallet createdWallet = walletRepository.createWallet(wallet);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdWallet);
     }
 
     @GetMapping("/{walletId}")
     public ResponseEntity<Wallet> getWallet(@PathVariable Long walletId) {
-        Wallet wallet = walletService.getWalletById(walletId);
+        Wallet wallet = walletRepository.getWalletById(walletId);
         return ResponseEntity.ok(wallet);
     }
 
