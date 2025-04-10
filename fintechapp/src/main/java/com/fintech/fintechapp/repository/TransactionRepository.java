@@ -7,12 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.*;
 import java.sql.DriverManager;
-import java.util.Optional;
 
-// @Repository
-// public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-//     Optional<Transaction> findByTransactionId(String transactionId);
-// }
 
 @Repository
 public class TransactionRepository {
@@ -23,7 +18,7 @@ public class TransactionRepository {
     public Transaction createTransaction(Transaction transaction) {
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             String query = "INSERT INTO transactions(transaction_id, sender_id, amount, currency, created_at) VALUES (?, ?, ?, ?, ?) RETURNING id";
-            try (PreparedStatement pstmt = connection.prepapredStatement(query)) {
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                 pstmt.setString(1, transaction.getTransactionId());
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
@@ -69,4 +64,6 @@ public class TransactionRepository {
         }
         return transaction;
     }
+
+    
 }

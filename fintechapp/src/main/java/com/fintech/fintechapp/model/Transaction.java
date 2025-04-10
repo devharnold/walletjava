@@ -17,6 +17,14 @@ public class Transaction {
     @Column(nullable = false)
     private Long userId;
 
+    @ManyToOne
+    @JoinColumn(name = "sender_wallet_id")
+    private Wallet sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_wallet_id")
+    private Wallet receiver;
+
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 

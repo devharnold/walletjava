@@ -9,17 +9,21 @@ import java.time.LocalDateTime;
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer walletId = (int) (Math.random() * 9);
 
-    @Column(nullable = false, unique = true)
-    private String walletId; // Unique wallet identifier
+    //@Column(nullable = false, unique = true)
+    //private String walletId; // Unique wallet identifier
 
     @Column(nullable = false)
     private Long userId; //User who owns the wallet
-
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Currency currency;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
@@ -36,16 +40,10 @@ public class Wallet {
     }
 
     //getters and setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getWalletId() {
+    public Integer getWalletId() {
         return walletId;
     }
-    public void setWalletId(String walletId) {
+    public void setWalletId(Integer walletId) {
         this.walletId = walletId;
     }
     public Currency getCurrency() {

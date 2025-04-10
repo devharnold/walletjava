@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fintech.fintechapp.model.VirtualCard;
 import com.fintech.fintechapp.repository.VirtualCardRepository;
-import com.fintech.fintechapp.exception.VirtualCardNotFoundException;
 
 @RestController
 public class VirtualCardController {
