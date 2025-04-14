@@ -26,8 +26,6 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    private boolean kycVerified = false;
-
     public User() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

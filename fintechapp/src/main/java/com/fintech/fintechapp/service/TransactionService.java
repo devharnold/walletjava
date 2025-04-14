@@ -14,7 +14,6 @@ import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.model.Wallet;
 import com.fintech.fintechapp.repository.TransactionRepository;
 import com.fintech.fintechapp.repository.WalletRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class TransactionService {
@@ -27,18 +26,21 @@ public class TransactionService {
         this.walletRepository = walletRepository;
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public Transaction createTransaction(Transaction transaction) {
+        return transactionRepository.createTransaction(transaction);
     }
 
     public Transaction getTransactionById(Long id) {
-        return transactionRepository.findById(id)
+        return transactionRepository.findByTransactionId(id)
             .orElseThrow(() -> new RuntimeException("Transaction Not Found"));
     }
 
-    public Optional<Double> getTransactionAmount(Long id) {
-        return transactionRepository.findTransactionAmount(id);
+    public List<Transaction> getTransactionByDateCreated(LocalDateTime createdAt) {
+        return transactionRepository.findByDateCreated(createdAt);
     }
 
+    public List<Transaction> getTransactionByAmount(Double amount) {
+        return transactionRepository.findByAmount(amount);
+    }
     
 }

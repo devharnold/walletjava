@@ -4,7 +4,6 @@ import com.fintech.fintechapp.model.User;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
@@ -22,7 +21,6 @@ public class UserRepository {
     //Row mapper to map the resultSet to an User object
     private RowMapper<User> userRowMapper = (rs, rowNum) -> {
         User user = new User();
-        user.setId(rs.setLong("id"));
         user.setUserId(rs.getString("user_id"));
         user.setBalance(rs.getBigDecimal("balance"));
         return user;
@@ -35,7 +33,7 @@ public class UserRepository {
         //Get the generates ID after insert
         String selectQuery = "SELECT id FROM users WHERE user_id = ?";
         Long id = jdbcTemplate.queryForObject(selectQuery, Long.class, user.getUserId());
-        user.setId(id);
+        user.setUserId(userId);
         return user;
     }
 

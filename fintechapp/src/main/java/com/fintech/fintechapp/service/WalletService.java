@@ -79,3 +79,126 @@ public class WalletService {
         return transactionRepository.save(transaction);
     }
 }
+
+//public class WalletService {
+//
+//    private final WalletDAO walletDAO;
+//    private final Connection connection;
+//
+//    public WalletService(Connection connection) {
+//        this.connection = connection;
+//        this.walletDAO = new WalletDAO(connection);
+//    }
+//
+//    public Optional<Wallet> getWalletByUserId(Long userId) {
+//        try {
+//            return walletDAO.getWalletByUserId(userId);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return Optional.empty();
+//        }
+//    }
+//
+//    public void transfer(int fromWalletId, int toWalletId, BigDecimal amount) throws Exception {
+//        try {
+//            connection.setAutoCommit(false);
+//
+//            Wallet fromWallet = walletDAO.getWalletById(fromWalletId)
+//                    .orElseThrow(() -> new Exception("Sender wallet not found"));
+//            Wallet toWallet = walletDAO.getWalletById(toWalletId)
+//                    .orElseThrow(() -> new Exception("Receiver wallet not found"));
+//
+//            if (fromWallet.getBalance().compareTo(amount) < 0) {
+//                throw new Exception("Insufficient balance");
+//            }
+//
+//            fromWallet.setBalance(fromWallet.getBalance().subtract(amount));
+//            toWallet.setBalance(toWallet.getBalance().add(amount));
+//
+//            walletDAO.updateWalletBalance(fromWallet);
+//            walletDAO.updateWalletBalance(toWallet);
+//
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), fromWalletId, "TRANSFER", amount.negate(), "P2P transfer", "SUCCESS"
+//            ));
+//
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), toWalletId, "TRANSFER", amount, "P2P transfer", "SUCCESS"
+//            ));
+//
+//            connection.commit();
+//        } catch (Exception e) {
+//            connection.rollback();
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), fromWalletId, "TRANSFER", amount, "P2P transfer failed", "ROLLED_BACK"
+//            ));
+//            throw e;
+//        } finally {
+//            connection.setAutoCommit(true);
+//        }
+//    }
+//
+//    public void withdraw(int walletId, BigDecimal amount, String description) throws Exception {
+//        try {
+//            connection.setAutoCommit(false);
+//
+//            Wallet wallet = walletDAO.getWalletById(walletId)
+//                    .orElseThrow(() -> new Exception("Wallet not found"));
+//
+//            if (wallet.getBalance().compareTo(amount) < 0) {
+//                throw new Exception("Insufficient funds");
+//            }
+//
+//            wallet.setBalance(wallet.getBalance().subtract(amount));
+//            walletDAO.updateWalletBalance(wallet);
+//
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), walletId, "WITHDRAWAL", amount.negate(), description, "SUCCESS"
+//            ));
+//
+//            connection.commit();
+//        } catch (Exception e) {
+//            connection.rollback();
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), walletId, "WITHDRAWAL", amount, description + " failed", "ROLLED_BACK"
+//            ));
+//            throw e;
+//        } finally {
+//            connection.setAutoCommit(true);
+//        }
+//    }
+//
+//    public void debitSubscription(int walletId, BigDecimal amount, String description) throws Exception {
+//        try {
+//            connection.setAutoCommit(false);
+//
+//            Wallet wallet = walletDAO.getWalletById(walletId)
+//                    .orElseThrow(() -> new Exception("Wallet not found"));
+//
+//            if (wallet.getBalance().compareTo(amount) < 0) {
+//                throw new Exception("Insufficient funds for subscription");
+//            }
+//
+//            wallet.setBalance(wallet.getBalance().subtract(amount));
+//            walletDAO.updateWalletBalance(wallet);
+//
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), walletId, "SUBSCRIPTION", amount.negate(), description, "SUCCESS"
+//            ));
+//
+//            connection.commit();
+//        } catch (Exception e) {
+//            connection.rollback();
+//            walletDAO.logTransaction(new TransactionLog(
+//                    generateRef(), walletId, "SUBSCRIPTION", amount, description + " failed", "ROLLED_BACK"
+//            ));
+//            throw e;
+//        } finally {
+//            connection.setAutoCommit(true);
+//        }
+//    }
+//
+//    private String generateRef() {
+//        return "TXN-" + System.currentTimeMillis();
+//    }
+//}

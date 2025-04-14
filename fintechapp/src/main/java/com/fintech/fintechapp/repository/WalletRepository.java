@@ -23,7 +23,6 @@ public class WalletRepository {
     // RowMapper to map the result set to a Wallet object
     private RowMapper<Wallet> walletRowMapper = (rs, rowNum) -> {
         Wallet wallet = new Wallet();
-        wallet.setId(rs.getLong("id"));
         wallet.setWalletId(rs.getString("wallet_id"));
         wallet.setBalance(rs.getBigDecimal("balance"));
         return wallet;
@@ -37,7 +36,7 @@ public class WalletRepository {
         // Get the generated ID after insert
         String selectQuery = "SELECT id FROM wallets WHERE wallet_id = ?";
         Long id = jdbcTemplate.queryForObject(selectQuery, Long.class, wallet.getWalletId());
-        wallet.setId(id);
+        wallet.setWalletId(id);
         return wallet;
     }
 
@@ -47,13 +46,6 @@ public class WalletRepository {
         List<Wallet> wallets = jdbcTemplate.query(query, walletRowMapper, walletId);
         return wallets.isEmpty() ? Optional.empty() : Optional.of(wallets.get(0));
     }
-
-    // Get wallet by ID
-    // public Optional<Wallet> findById(Long id) {
-    //     String query = "SELECT * FROM wallets WHERE id = ?";
-    //     List<Wallet> wallets = jdbcTemplate.query(query, walletRowMapper, id);
-    //     return wallets.isEmpty() ? Optional.empty() : Optional.of(wallets.get(0));
-    // }
 
     // Find wallet balance
     public Optional<Double> findWalletBalance(Long id) {
@@ -66,11 +58,5 @@ public class WalletRepository {
     public int updateBalance(Long walletId, BigDecimal balance) {
         String query = "UPDATE wallets SET balance = ? WHERE id = ?";
         return jdbcTemplate.update(query, balance, walletId);
-    }
-
-    // Get all wallets
-    public List<Wallet> findAll() {
-        String query = "SELECT * FROM wallets";
-        return jdbcTemplate.query(query, walletRowMapper);
     }
 }

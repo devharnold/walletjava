@@ -22,13 +22,11 @@ import com.fintech.fintechapp.repository.TransactionRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
-    private final TransactionRepository transactionRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, WalletRepository walletRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.walletRepository = walletRepository;
-        this.transactionRepository = transactionRepository;
     }
 
     public List<User> getAllUsers() {
@@ -36,7 +34,7 @@ public class UserService {
     }
 
     public Optional<User> getUserByFirstName(String firstName) {
-        return userRepository.findByFirstName();
+        return userRepository.findByFirstName()
             .orElseThrow(() -> new RuntimeException("User not found!"));
     }
 
@@ -45,8 +43,4 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("Wallet not found!"));
     }
 
-    public List<Transaction> getAllTransactionsByPeriod() {
-        return transactionRepository.findByDate()
-            .orElseThrow(() -> new RuntimeException("Ooops!! Transactions not found"));
-    }
 }
