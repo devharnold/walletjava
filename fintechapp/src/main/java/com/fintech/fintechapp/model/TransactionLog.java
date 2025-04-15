@@ -8,6 +8,7 @@ public class TransactionLog {
 
     private int id;
     private String transactionRef;
+    private int userId;
     private int walletId;
     private String type; // PAYMENT, TRANSFER, WITHDRAWAL, SUBSCRIPTION
     private BigDecimal amount;
@@ -18,8 +19,9 @@ public class TransactionLog {
     public TransactionLog() {}
 
     // Constructor
-    public TransactionLog(String transactionRef, int walletId, String type, BigDecimal amount, String description, String status) {
+    public TransactionLog(String transactionRef, int userId, int walletId, String type, BigDecimal amount, String description, String status) {
         this.transactionRef = transactionRef;
+        this.userId = userId;
         this.walletId = walletId;
         this.type = type;
         this.amount = amount;
@@ -34,6 +36,9 @@ public class TransactionLog {
 
     public String getTransactionRef() { return transactionRef; }
     public void setTransactionRef(String transactionRef) { this.transactionRef = transactionRef; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
     public int getWalletId() { return walletId; }
     public void setWalletId(int walletId) { this.walletId = walletId; }

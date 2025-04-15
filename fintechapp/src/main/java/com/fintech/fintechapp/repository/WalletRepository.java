@@ -1,6 +1,7 @@
 package com.fintech.fintechapp.repository;
 
 import com.fintech.fintechapp.model.Wallet;
+import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import java.time.LocalDateTime;
+
 
 @Repository
 public class WalletRepository {
@@ -23,7 +27,7 @@ public class WalletRepository {
     // RowMapper to map the result set to a Wallet object
     private RowMapper<Wallet> walletRowMapper = (rs, rowNum) -> {
         Wallet wallet = new Wallet();
-        wallet.setWalletId(rs.getString("wallet_id"));
+        wallet.setWalletId(rs.getInt("wallet_id"));
         wallet.setBalance(rs.getBigDecimal("balance"));
         return wallet;
     };
@@ -36,7 +40,7 @@ public class WalletRepository {
         // Get the generated ID after insert
         String selectQuery = "SELECT id FROM wallets WHERE wallet_id = ?";
         Long id = jdbcTemplate.queryForObject(selectQuery, Long.class, wallet.getWalletId());
-        wallet.setWalletId(id);
+        wallet.setWalletId();
         return wallet;
     }
 
@@ -58,5 +62,11 @@ public class WalletRepository {
     public int updateBalance(Long walletId, BigDecimal balance) {
         String query = "UPDATE wallets SET balance = ? WHERE id = ?";
         return jdbcTemplate.update(query, balance, walletId);
+    }
+
+    public void transfer(int fromWalletId, int toWalletId, BigDecimal amount, LocalDateTime createdAt) throws Exception {
+        Wallet fromWallet = Optional<Wallet> findByWalletId(fromWalletId)
+                .orElseThrow(() -> new Exception("Sender wallet not found/not active!"));
+
     }
 }

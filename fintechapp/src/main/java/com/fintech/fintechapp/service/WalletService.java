@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.sql.ResultSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,38 +46,38 @@ public class WalletService {
     }
 
     @Transactional
-    public Transaction transfer(String senderWalletId, String receiverWalletId, BigDecimal amount, String message) {
-        Wallet sender = walletRepository.findByWalletId(senderWalletId)
-            .orElseThrow(() -> new RuntimeException("Sender wallet not found!"));
-
-        Wallet receiver = walletRepository.findByWalletId(receiverWalletId)
-            .orElseThrow(() -> new RuntimeException("Receiver wallet not found!"));
-
-        if (sender.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient balance!");
-        }
-
-        // Debit sender
-        sender.setBalance(sender.getBalance().subtract(amount));
-
-        // Credit receiver
-        receiver.setBalance(receiver.getBalance().add(amount));
-
-        // Save updated balances
-        walletRepository.save(sender);
-        walletRepository.save(receiver);
+//    public Transaction transfer(String senderWalletId, String receiverWalletId, BigDecimal amount, String message) {
+//        Wallet sender = walletRepository.findByWalletId(senderWalletId)
+//            .orElseThrow(() -> new RuntimeException("Sender wallet not found!"));
+//
+//        Wallet receiver = walletRepository.findByWalletId(receiverWalletId)
+//            .orElseThrow(() -> new RuntimeException("Receiver wallet not found!"));
+//
+//        if (sender.getBalance().compareTo(amount) < 0) {
+//            throw new RuntimeException("Insufficient balance!");
+//        }
+//
+//        // Debit sender
+//        sender.setBalance(sender.getBalance().subtract(amount));
+//
+//        // Credit receiver
+//        receiver.setBalance(receiver.getBalance().add(amount));
+//
+//        // Save updated balances
+//        walletRepository.save(sender);
+//        walletRepository.save(receiver);
 
         // Create and save transaction
-        Transaction transaction = new Transaction();
-        transaction.setTransactionRef(UUID.randomUUID().toString());
-        transaction.setSender(sender);
-        transaction.setReceiver(receiver);
-        transaction.setAmount(amount);
-        transaction.setTimestamp(LocalDateTime.now());
-        transaction.setMessage(message);
+//        Transaction transaction = new Transaction();
+//        transaction.setTransactionRef(UUID.randomUUID().toString());
+//        transaction.setSender(sender);
+//        transaction.setReceiver(receiver);
+//        transaction.setAmount(amount);
+//        transaction.setTimestamp(LocalDateTime.now());
+//        transaction.setMessage(message);
 
         // Save transaction and return
-        return transactionRepository.save(transaction);
+        //return transactionRepository.save(transaction);
     }
 }
 

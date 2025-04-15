@@ -19,7 +19,6 @@ import javax.xml.validation.
 import com.fintech.fintechapp.model.Wallet;
 import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.service.WalletService;
-import com.fintech.fintechapp.repository.WalletRepository;
 
 @RestController
 @RequestMapping("/api/wallets")
@@ -29,13 +28,13 @@ public class WalletController {
 
     @PostMapping
     public ResponseEntity<Wallet> createWallet(@RequestBody Wallet wallet) {
-        Wallet createdWallet = walletRepository.createWallet(wallet);
+        Wallet createdWallet = walletService.createWallet(wallet);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdWallet);
     }
 
     @GetMapping("/{walletId}")
     public ResponseEntity<Wallet> getWallet(@PathVariable Long walletId) {
-        Wallet wallet = walletRepository.getWalletById(walletId);
+        Wallet wallet = walletService.getWalletById(walletId);
         return ResponseEntity.ok(wallet);
     }
 
@@ -60,11 +59,7 @@ public class WalletController {
     @GetMapping("/{walletId}/balance")
     public ResponseEntity<Double> checkBalance(@PathVariable Long walletId) {
         Optional<Double> balance = walletService.getWalletBalance(walletId);
-        if (balance.isPresent()) {
-            return ResponseEntity.ok(balance.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
     @PostMapping("/transfer")
     public ResponseEntity<Transaction> transferFunds(

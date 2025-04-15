@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.*;
 import java.util.*;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.time.LocalDateTime;
 
 @Repository
@@ -58,6 +56,11 @@ public class TransactionRepository {
     public List<Transaction> findByAmount(Double amount) {
         String query = "SELECT * FROM transactions WHERE amount = ?";
         return jdbcTemplate.query(query, transactionRowMapper, amount);
+    }
+
+    public List<Transaction> saveTransaction(Transaction transaction) {
+        String query = "INSERT INTO transactions () VALUES ()";
+        return jdbcTemplate.query(query, transactionRowMapper, )
     }
 
     public Optional<Transaction> findByType(type) {
