@@ -1,6 +1,7 @@
 package com.fintech.fintechapp.controller;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,6 @@ public class WalletController {
         return ResponseEntity.ok(wallet);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Wallet>> getAllWallets() {
-        List<Wallet> wallets = walletService.getAllWallets();
-        return ResponseEntity.ok(wallets);
-    }
 
     @PostMapping("/{walletId}/deposit")
     public ResponseEntity<Wallet> deposit(@PathVariable Long walletId, @RequestParam double amount) {
@@ -51,10 +47,13 @@ public class WalletController {
     }
 
     @PostMapping("/{walletId}/withdraw")
-    public ResponseEntity<Wallet> withdraw(@PathVariable Long walletId, @RequestParam double amount) {
+    public ResponseEntity<Wallet> withdraw(@PathVariable Integer walletId, @RequestParam double amount) {
         wallet updatedWallet = walletService.withdraw(walletId, amount);
         return ResponseEntity.ok(updatedWallet);
     }
+
+    @GetMapping("{walletId}/fetch")
+    public ResponseEntity<Wallet> fetch(@PathVariable Integer)
 
     @GetMapping("/{walletId}/balance")
     public ResponseEntity<Double> checkBalance(@PathVariable Long walletId) {
@@ -62,13 +61,13 @@ public class WalletController {
         return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
     @PostMapping("/transfer")
-    public ResponseEntity<Transaction> transferFunds(
-        @RequestParam String senderWalletId,
-        @RequestParam String receiverWalletId,
-        @RequestParam Double amount,
+    public ResponseEntity<Transaction> transactFunds(
+        @RequestParam Integer senderWalletId,
+        @RequestParam Integer receiverWalletId,
+        @RequestParam BigDecimal amount,
         @RequestParam(required = false) String message
     ) {
-        Transaction txn = walletService.transfer(senderWalletId, receiverWalletId, amount);
+        Transaction txn = walletService.transferFunds(senderWalletId, receiverWalletId, amount);
         return ResponseEntity.ok(txn);
     }
 
