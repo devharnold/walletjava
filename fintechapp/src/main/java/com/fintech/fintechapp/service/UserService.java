@@ -29,6 +29,7 @@ public class UserService {
         this.walletRepository = walletRepository;
     }
 
+    @Transactional(readOnly=True)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

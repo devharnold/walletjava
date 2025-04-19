@@ -1,5 +1,6 @@
 package com.fintech.fintechapp.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
-import javax.xml.validation.
+
 
 import com.fintech.fintechapp.model.Wallet;
 import com.fintech.fintechapp.model.Transaction;
@@ -34,41 +35,44 @@ public class WalletController {
     }
 
     @GetMapping("/{walletId}")
-    public ResponseEntity<Wallet> getWallet(@PathVariable Long walletId) {
+    public ResponseEntity<Wallet> getWallet(@PathVariable Integer walletId) {
         Wallet wallet = walletService.getWalletById(walletId);
         return ResponseEntity.ok(wallet);
     }
 
-
-    @PostMapping("/{walletId}/deposit")
-    public ResponseEntity<Wallet> deposit(@PathVariable Long walletId, @RequestParam double amount) {
-        wallet updatedWallet = walletService.deposit(walletId, amount);
-        return ResponseEntity.ok(updatedWallet);
-    }
-
-    @PostMapping("/{walletId}/withdraw")
-    public ResponseEntity<Wallet> withdraw(@PathVariable Integer walletId, @RequestParam double amount) {
-        wallet updatedWallet = walletService.withdraw(walletId, amount);
-        return ResponseEntity.ok(updatedWallet);
-    }
-
-    @GetMapping("{walletId}/fetch")
-    public ResponseEntity<Wallet> fetch(@PathVariable Integer)
 
     @GetMapping("/{walletId}/balance")
     public ResponseEntity<Double> checkBalance(@PathVariable Long walletId) {
         Optional<Double> balance = walletService.getWalletBalance(walletId);
         return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
-    @PostMapping("/transfer")
-    public ResponseEntity<Transaction> transactFunds(
-        @RequestParam Integer senderWalletId,
-        @RequestParam Integer receiverWalletId,
-        @RequestParam BigDecimal amount,
-        @RequestParam(required = false) String message
-    ) {
-        Transaction txn = walletService.transferFunds(senderWalletId, receiverWalletId, amount);
+
+    @PostMapping("/{wallet}/deposit")
+    public ResponseEntity<Transaction> depositToWallet(
+        String shortCode,
+        String commandID,
+        String amount,
+        String MSISDN,
+        String billRefNumber
+    ) throws IOException {
+        Transaction txn = walletService.fundWallet(shortCode, commandID, amount, MSISDN, billRefNumber);
         return ResponseEntity.ok(txn);
     }
 
+    @PostMapping("/wallet}/withdraw")
+    public ResponseEntity<Transaction> withdrawFromWallet(
+            String initiatorName,
+            String securityCredential,
+            String commandID,
+            String amount,
+            String partyA,
+            String partyB,
+            String remarks,
+            String queueTimeOutURL,
+            String resultURL,
+            String occassion
+    ) throws IOException {
+        Transaction txn = walletService.debitWallet(initiatorName, securityCredential, commandID, amount, partyA, partyB, remarks, queueTimeOutURL, resultURL, occassion);
+        return ResponseEntity.ok(txn);
+    }
 }

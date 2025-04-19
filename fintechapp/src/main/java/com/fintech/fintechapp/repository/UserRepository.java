@@ -6,10 +6,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.*;
 import java.util.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Repository
+
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -21,19 +27,19 @@ public class UserRepository {
     //Row mapper to map the resultSet to an User object
     private RowMapper<User> userRowMapper = (rs, rowNum) -> {
         User user = new User();
-        user.setUserId(rs.getString("user_id"));
-        user.setBalance(rs.getBigDecimal("balance"));
+        user.setUserId(rs.getInt("user_id"));
+        user.setWalletBalance(rs.getBigDecimal("balance"));
         return user;
-    }
+    };
 
     public User createUser(User user) {
         String query = "INSERT INTO users (first_name, last_name, user_email, phone, currency) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(query, user.getUserId());
 
-        //Get the generates ID after insert
+        //Get the generated ID after insert
         String selectQuery = "SELECT id FROM users WHERE user_id = ?";
-        Long id = jdbcTemplate.queryForObject(selectQuery, Long.class, user.getUserId());
-        user.setUserId(userId);
+        Integer id = jdbcTemplate.queryForObject(selectQuery, Integer.class, user.getUserId());
+        user.setUserId(user.getUserId());
         return user;
     }
 
@@ -45,17 +51,12 @@ public class UserRepository {
     }
 
     // Get users balance
-    public Optional<Double> findUserBalance(Long id) {
+    public Optional<BigDecimal> findUserBalance(BigDecimal balance) {
         String query = "SELECT balance FROM wallets WHERE user_id = ?";
-        Double balance = jdbcTemplate.queryForObject(query, Double.class, id);
+        BigDecimal = jdbcTemplate.queryForObject(query, BigDecimal.class, balance);
         return Optional.ofNullable(balance);
     }
 
-    // get all users
-    public List<User> findAll() {
-        String query = "SELECT * FROM users";
-        return jdbcTemplate.query(query, userRowMapper);
-    }
 
     // get user by name
     public Optional<User> findByFirstName(String firstName) {

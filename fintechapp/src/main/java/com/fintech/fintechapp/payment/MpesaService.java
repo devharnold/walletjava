@@ -1,4 +1,4 @@
-package com.fintech.fintechapp;
+package com.fintech.fintechapp.payment;
 
 import okhttp3.*;
 import org.json.*;
@@ -6,10 +6,17 @@ import org.json.*;
 import java.io.IOException;
 import java.util.Base64;
 
-public class Mpesa {
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+
+@Component
+public class MpesaService {
+    @Value(("${app.Key}"))
     private String appKey;
+
+    @Value(("${app.Secret"))
     private String appSecret;
-    public Mpesa(String app_key, String app_secret){
+    public MpesaService(String app_key, String app_secret){
         appKey=app_key;
         appSecret=app_secret;
     }
@@ -265,7 +272,7 @@ public class Mpesa {
                 .url("https://sandbox.safaricom.co.ke/safaricom/reversal/v1/request")
                 .post(body)
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer xNA3e9KhKQ8qkdTxJJo7IDGkpFNV")
+                .addHeader("authorization", "Bearer -your bearer token")
                 .addHeader("cache-control", "no-cache")
                 .build();
 
