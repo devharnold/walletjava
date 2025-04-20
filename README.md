@@ -1,15 +1,6 @@
-# **EARLWALL**
-**Proposed agenda**
-
-This project is focused on building a platform that supports P2P payments, wallet management, and Ethereum integration. The backend is based on Java SpringBoot to create the micro-service architechturee and  PostgreSQL for database management, ensuring scalability, security, and performance.
+# **Mobile Wallet**
 
 ---
-
-### How to start project development ###
-I am using VsCode cause that's the IDE i have setup for my development already
-
-On VsCode, make sure that the **Spring Boot Extension Pack** is already installed.
-Afterwards, press `ctrl + shift + P` and do the following:
 
 
 ## **Common User Credentials for Signup**
@@ -54,6 +45,7 @@ Here’s a list of essential credentials needed for a user to sign up:
 ## **Security Measures During Signup**
 
 - **Email Verification**: Send verification emails with confirmation links to ensure authenticity.
+- **Jwt Algorithm**: Enhancing security: Secure user authentication and authorization. Verify identity and grant access based on roles and permissions.
 - **CAPTCHA**: Prevent bot signups using CAPTCHA.
 - **Two-Factor Authentication (2FA)**: Strongly encourage users to enable 2FA (via SMS, email, or an authentication app).
 - **Rate Limiting**: Implement limits to prevent brute-force attacks during signup attempts.
@@ -68,7 +60,7 @@ Here’s a list of essential credentials needed for a user to sign up:
 - **Two-Factor Authentication (2FA)**: Implement 2FA for secure login and transaction protection.
 - **Account Management**: Enable users to reset passwords and update profile information.
 
-### **2. P2P Payment Features**
+### **2. P2P EFTs Features**
 
 - **Transaction Management**: Create endpoints for initiating, processing, and tracking P2P transactions.
 - **Escrow Services**: Implement escrow features for secure P2P transactions.
@@ -89,7 +81,7 @@ Here’s a list of essential credentials needed for a user to sign up:
 ### **5. API Integration**
 
 - **Payment Gateways**: Integrate with fiat payment gateways like Stripe, PayPal and Mpesa Daraja.
-- **Blockchain Nodes**: Use providers like Infura or Alchemy to connect to Ethereum nodes.
+
 - **External APIs**: Integrate APIs for exchange rates, identity verification, or transaction monitoring.
 
 ---
@@ -100,28 +92,6 @@ Here’s a list of essential credentials needed for a user to sign up:
 
 PostgreSQL has been selected for its robust feature set, performance, and extensibility, particularly suited to handling financial data and transactions.
 
-#### **Advantages of Using PostgreSQL**:
-
-1. **ACID Compliance**: Ensures transaction reliability and consistency.
-2. **Rich Data Types**: Supports JSON for storing transaction details.
-3. **Extensibility**: Allows custom data types and functions for managing specific project requirements.
-4. **Performance**: Features like indexing and Multiversion Concurrency Control (MVCC) help manage transactions efficiently.
-5. **Scalability**: Supports horizontal scaling, replication, and clustering.
-6. **Security**: Offers role-based access control and encryption for data protection.
-
-### **How PostgreSQL Fits in the Project**:
-
-- **Digital Wallet System**: Manage user information, wallet balances, and transaction histories.
-- **P2P Payment Platform**: Handle eft(s), disputes, and escrow services securely.
-- **Ethereum Integration**: Store user Ethereum addresses and transaction details.
-
-#### **Installation**:
-
-To install PostgreSQL:
-
-```bash
-pip install psycopg2
-```
 
 ---
 
