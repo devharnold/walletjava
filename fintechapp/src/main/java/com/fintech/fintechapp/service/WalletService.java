@@ -29,6 +29,10 @@ public class WalletService {
         this.transactionRepository = transactionRepository;
     }
 
+    public Wallet createWallet(Wallet wallet) {
+        return walletRepository.createWallet(wallet);
+    }
+
     public Wallet getWalletById(Integer id) {
         return walletRepository.findByWalletId(id)
                 .orElseThrow(() -> new RuntimeException("Wallet not found"));

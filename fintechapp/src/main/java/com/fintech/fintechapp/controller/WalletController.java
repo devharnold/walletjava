@@ -1,18 +1,14 @@
 package com.fintech.fintechapp.controller;
 
 import java.io.IOException;
-import java.util.List;
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
@@ -34,20 +30,20 @@ public class WalletController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdWallet);
     }
 
-    @GetMapping("/{walletId}")
+    @GetMapping("/api/wallets/{wallet_id}")
     public ResponseEntity<Wallet> getWallet(@PathVariable Integer walletId) {
         Wallet wallet = walletService.getWalletById(walletId);
         return ResponseEntity.ok(wallet);
     }
 
 
-    @GetMapping("/{walletId}/balance")
+    @GetMapping("/api/wallets/{wallet_id}/balance")
     public ResponseEntity<Double> checkBalance(@PathVariable Long walletId) {
         Optional<Double> balance = walletService.getWalletBalance(walletId);
         return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    @PostMapping("/{wallet}/deposit")
+    @PostMapping("/api/wallets/{wallet_id}/deposit")
     public ResponseEntity<Transaction> depositToWallet(
         String shortCode,
         String commandID,
@@ -59,7 +55,7 @@ public class WalletController {
         return ResponseEntity.ok(txn);
     }
 
-    @PostMapping("/wallet}/withdraw")
+    @PostMapping("/api/wallets/{wallet_id}/withdraw")
     public ResponseEntity<Transaction> withdrawFromWallet(
             String initiatorName,
             String securityCredential,

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.*;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,8 @@ import com.fintech.fintechapp.mapper.WalletRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDateTime;
+
+import static java.math.BigDecimal.*;
 
 
 @Repository
@@ -111,4 +114,36 @@ public class WalletRepository {
         jdbcTemplate.update(query, newReceiverBalance, toWalletId);
     }
 
+    @Transactional
+    public void fundWallet(String shortCode, String commandID, String amountStr, String MSISDN, String billRefNumber, Integer walletId) throws IOException {
+        System.out.println("Funding wallet.../");
+
+        // Simulate mpesa payment
+        mpesaService.C2BSimulation(shortCode, commandID, amountStr, MSISDN, billRefNumber);
+
+        // convert amount string to number
+        double amount = Double.parseDouble(amountStr);
+
+        // Optional: get current balance first then add it
+        String selectQuery = "SELECT balance FROM wallets WHERE wallet_id = ?";
+        Double currentBalance = jdbcTemplate.queryForObject(selectQuery, new Object[]{walletId}, Double.class);
+
+        double newBalance = currentBalance + amount;
+
+        String updateQuery = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
+        jdbcTemplate.update(updateQuery, newBalance, walletId);
+    }
+
+    @Transactional
+    public void updateWalletBalanceAfterMpesaCallback(Integer walletId, String amountStr) {
+        double amount = Double.parseDouble(amountStr);
+
+        String selectQuery = "SELECT balance FROM wallets WHERE wallet_id = ?";
+        Double currentBalance = jdbcTemplate.queryForObject(selectQuery, new Object[]{walletId}, Double.class);
+
+        double newBalance = currentBalance + amount;
+
+        String updateQuery = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
+        jdbcTemplate.update(updateQuery, newBalance, walletId);
+    }
 }
