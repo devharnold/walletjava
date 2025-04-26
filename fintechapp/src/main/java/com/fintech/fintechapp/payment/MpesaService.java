@@ -92,19 +92,19 @@ public class MpesaService {
     }
 
     // wallet application to client
-    public String B2CRequest( String initiatorName, String securityCredential,String commandID, String  amount, String partyA,String partyB, String remarks, String queueTimeOutURL, String resultURL, String occassion) throws IOException {
+    public String B2CRequest( String initiatorName, String securityCredential,String commandID, String  amountStr, String partyA,String partyB, String remarks, String queueTimeOutURL, String resultURL, String occasion) throws IOException {
         JSONArray jsonArray=new JSONArray();
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("InitiatorName", initiatorName);
         jsonObject.put("SecurityCredential", securityCredential);
         jsonObject.put("CommandID", commandID);
-        jsonObject.put("Amount", amount);
+        jsonObject.put("Amount", amountStr);
         jsonObject.put("PartyA", partyA);
         jsonObject.put("PartyB", partyB);
         jsonObject.put("Remarks", remarks);
         jsonObject.put("QueueTimeOutURL", queueTimeOutURL);
         jsonObject.put("ResultURL", resultURL);
-        jsonObject.put("Occassion", occassion);
+        jsonObject.put("Occasion", occasion);
 
 
         jsonArray.put(jsonObject);
@@ -242,7 +242,7 @@ public class MpesaService {
 
     }
 
-    public String reversal(String initiator, String securityCredential, String commandID, String transactionID, String amount, String receiverParty, String receiverIdentifierType, String resultURL,String queueTimeOutURL, String remarks, String ocassion) throws IOException {
+    public String reversal(String initiator, String securityCredential, String commandID, String transactionID, String amount, String receiverParty, String receiverIdentifierType, String resultURL,String queueTimeOutURL, String remarks, String occasion) throws IOException {
         JSONArray jsonArray=new JSONArray();
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("Initiator", initiator);
@@ -255,7 +255,7 @@ public class MpesaService {
         jsonObject.put("QueueTimeOutURL", queueTimeOutURL);
         jsonObject.put("ResultURL", resultURL);
         jsonObject.put("Remarks", remarks);
-        jsonObject.put("Occasion", ocassion);
+        jsonObject.put("Occasion", occasion);
 
 
 

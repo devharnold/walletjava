@@ -1,19 +1,12 @@
 package com.fintech.fintechapp.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fintech.fintechapp.model.User;
 import com.fintech.fintechapp.model.Wallet;
-import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.repository.UserRepository;
 import com.fintech.fintechapp.repository.WalletRepository;
 import com.fintech.fintechapp.repository.TransactionRepository;
@@ -29,19 +22,28 @@ public class UserService {
         this.walletRepository = walletRepository;
     }
 
-    @Transactional(readOnly=True)
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public User createUser(User user) {
+        return userRepository.createUser(user);
     }
 
-    public Optional<User> getUserByFirstName(String firstName) {
-        return userRepository.findByFirstName()
-            .orElseThrow(() -> new RuntimeException("User not found!"));
+    public Optional<User> getUserByName(String name) {
+        return Optional.ofNullable(userRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("User not found!")));
     }
 
-    public Optional<Wallet> getWalletById(Long id) {
-        return walletRepository.findByWalletId(id)
-            .orElseThrow(() -> new RuntimeException("Wallet not found!"));
+    public Optional<User> getUserById(Integer userId) {
+        return Optional.ofNullable(userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found")));
+    }
+
+    public Optional<Wallet> getWalletById(Integer id) {
+        return Optional.ofNullable(walletRepository.findByWalletId(id)
+                .orElseThrow(() -> new RuntimeException("Wallet not found!")));
+    }
+
+    public Optional<User> getUserByUserEmail(String email) {
+        return Optional.ofNullable(userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
 }

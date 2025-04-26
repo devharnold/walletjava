@@ -2,17 +2,18 @@ package com.fintech.fintechapp.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="transactions")
+@Table(name = "transactions")
 public class Transaction {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(nullable = false, unique = true)
-    private String transactionId; //Unique transaction id for every transaction that takes place
+    private String transactionId; // Unique user-facing transaction reference
 
     @Column(nullable = false)
     private Long userId;
@@ -34,42 +35,93 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public Transaction() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // getters and setters
-    public Long getId() {
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = generateRandomString(9);
+        }
+        if (this.transactionId == null) {
+            this.transactionId = "TXN-" + generateRandomString(9);
+        }
+    }
+
+    private String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return sb.toString();
+    }
+
+    // Getters and Setters
+    public String getId() {
         return id;
     }
-    public void setId(Long id) {
+
+    public void setId(String id) {
         this.id = id;
     }
+
     public String getTransactionId() {
         return transactionId;
     }
+
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
+
     public Long getUserId() {
         return userId;
     }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Wallet getSender() {
+        return sender;
+    }
+
+    public void setSender(Wallet sender) {
+        this.sender = sender;
+    }
+
+    public Wallet getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Wallet receiver) {
+        this.receiver = receiver;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }
+
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }

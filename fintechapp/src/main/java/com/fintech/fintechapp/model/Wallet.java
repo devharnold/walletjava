@@ -28,6 +28,10 @@ public class Wallet {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 
+    @Version
+    @Column(nullable = false)
+    private int version;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -68,6 +72,14 @@ public class Wallet {
     }
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
     public LocalDateTime getCreatedAt() {
         return createdAt;

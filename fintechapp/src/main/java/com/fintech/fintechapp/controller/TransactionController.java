@@ -1,6 +1,8 @@
 package com.fintech.fintechapp.controller;
 
 import java.util.List;
+import java.util.Optional;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 
 import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.service.TransactionService;
-import com.fintech.fintechapp.repository.TransactionRepository;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -29,21 +32,29 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
     }
 
-    @GetMapping("/{transactionId")
-    public ResponseEntity<Transaction> getTransaction(@PathVariable Long transactionId) {
-        Transaction transaction = transactionService.getTransactionById(transactionId);
-        return ResponseEntity.ok(transaction);
+    @GetMapping("/api/transactions/by-transaction_id")
+    public ResponseEntity<Transaction> getTransactionById(@PathVariable String transactionId) {
+        return transactionService.getTransactionById(transactionId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{transaction}")
-    public ResponseEntity<Transaction> getTransactionByDate(@PathVariable LocalDateTime createdAt) {
-        Transaction transaction = transactionService.getTransactionByDateCreated(LocalDateTime createdAt);
-        return ResponseEntity.ok(transaction);
+    @GetMapping("/api/transactions/by-date")
+    public ResponseEntity<Transaction> getTransactionByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAt) {
+        List<Transaction> transactions = transactionService.getTransactionsByDateCreated(createdAt); //List<Transaction> Lists all transactions that took place during that specific time
+
+        return transactions.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{transaction")
-    public ResponseEntity<Transaction> getTransactionByAmount(@PathVariable Double amount) {
-        Transaction transaction = transactionService.getTransactionByAmount(Double amount);
-        return ResponseEntity.ok(transaction);
+    @GetMapping("/api/transactions/amount/{amount}")
+    public ResponseEntity<List<Transaction>> getTransactionByAmount(@PathVariable BigDecimal amount) {
+        List<Transaction> transactions = transactionService.getTransactionsByAmount(amount);
+
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(transactions);
+        }
     }
 }

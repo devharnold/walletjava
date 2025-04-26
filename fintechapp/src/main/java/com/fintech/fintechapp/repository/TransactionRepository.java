@@ -6,13 +6,17 @@ import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fintech.fintechapp.mapper.TransactionRowMapper;
+
 import java.math.*;
+import java.sql.Timestamp;
 import java.util.*;
 import java.time.LocalDateTime;
 
 @Repository
 public class TransactionRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Transaction> rowMapper = new TransactionRowMapper();
 
     @Autowired
     public TransactionRepository(JdbcTemplate jdbcTemplate) {
@@ -20,7 +24,7 @@ public class TransactionRepository {
     }
 
     //Row mapper to map the result set to a Transaction object
-    private RowMapper<Transaction> transactionRowMapper = (rs, rowNum) -> {
+    private RowMapper<Transaction> TransactionRowMapper = (rs, rowNum) -> {
         Transaction transaction = new Transaction();
         transaction.setId(rs.getLong("id"));
         transaction.setTransactionId(rs.getString("transaction_id"));
@@ -41,30 +45,23 @@ public class TransactionRepository {
     }
 
     // find transaction by (transaction_id)
-    public Optional<Transaction> findByTransactionId(Long transactionId) {
+    public Optional<Transaction> findByTransactionId(String transactionId) {
         String query = "SELECT * FROM transactions WHERE transaction_id = ?";
-        List<Transaction> transactions = jdbcTemplate.query(query, transactionRowMapper, transactionId);
+        List<Transaction> transactions = jdbcTemplate.query(query, TransactionRowMapper, transactionId);
         return transactions.isEmpty() ? Optional.empty() : Optional.of(transactions.get(0));
     }
 
     // find transaction by date
     public List<Transaction> findByDateCreated(LocalDateTime createdAt) {
         String query = "SELECT * FROM transactions WHERE created_At = ?";
-        return jdbcTemplate.query(query, transactionRowMapper, createdAt);
+        return jdbcTemplate.query(query, TransactionRowMapper, createdAt);
     }
 
-    public List<Transaction> findByAmount(Double amount) {
+    public List<Transaction> findByAmount(BigDecimal amount) {
         String query = "SELECT * FROM transactions WHERE amount = ?";
-        return jdbcTemplate.query(query, transactionRowMapper, amount);
+        return jdbcTemplate.query(query, TransactionRowMapper, amount);
     }
 
-    public List<Transaction> saveTransaction(Transaction transaction) {
-        String query = "INSERT INTO transactions () VALUES ()";
-        return jdbcTemplate.query(query, transactionRowMapper, )
-    }
 
-    public Optional<Transaction> findByType(type) {
-        String query = "SELECT * FROM transactions WHERE type = ?";
-        return jdbcTemplate.query(query, transactionRowMapper, type);
-    }
+
 }

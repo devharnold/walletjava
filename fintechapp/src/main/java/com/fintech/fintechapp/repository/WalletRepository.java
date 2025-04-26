@@ -1,7 +1,6 @@
 package com.fintech.fintechapp.repository;
 
 import com.fintech.fintechapp.model.Wallet;
-import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,25 +11,16 @@ import java.io.IOException;
 import java.math.*;
 import java.util.List;
 import java.util.Optional;
-import java.sql.PreparedStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.sql.SQLException;
 
 import com.fintech.fintechapp.payment.MpesaService;
 import com.fintech.fintechapp.mapper.WalletRowMapper;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.time.LocalDateTime;
-
-import static java.math.BigDecimal.*;
 
 
 @Repository
 public class WalletRepository {
-    private final JdbcTemplate jdbcTemplate;
+    private static final JdbcTemplate jdbcTemplate;
     private final RowMapper<Wallet> rowMapper = new WalletRowMapper();
 
     @Autowired
@@ -64,74 +54,29 @@ public class WalletRepository {
     }
 
     public Optional<Wallet> findByWalletId(Integer walletId) {
-        String query = "SELECT * FROM wallets WHERE wallet_id = ?";
-        List<Wallet> wallets = jdbcTemplate.query(query, WalletRowMapper, walletId);
-        return wallets.isEmpty() ? Optional.empty() : Optional.of(wallets.get(0));
+        String sql = "SELECT * FROM wallets WHERE wallet_id = ?";
+
+        return jdbcTemplate.query(sql, new Object[]{walletId}, rs -> {
+            if (rs.next()) {
+                Wallet wallet = new Wallet();
+                wallet.setWalletId(rs.getInt("wallet_id"));
+                wallet.setBalance(rs.getBigDecimal("balance"));
+                wallet.setVersion(rs.getInt("version"));
+                return Optional.of(wallet);
+            }
+            return Optional.empty();
+        });
     }
 
-    public Optional<Wallet> findWalletBalance(BigDecimal balance) {
+    public static int updateWalletBalanceWithVersion(Integer walletId, BigDecimal newBalance, int currentVersion) {
+        String sql = "UPDATE wallets SET balance = ?, version = version + 1 WHERE wallet_id = ? AND version = ?";
+        return jdbcTemplate.update(sql, newBalance, walletId, currentVersion);
+    }
+
+    public Optional<BigDecimal> findWalletBalance(BigDecimal balance) {
         String query = "SELECT balance FROM wallets WHERE wallet_id = ?";
         BigDecimal balance = jdbcTemplate.queryForObject(query, BigDecimal.class, balance);
         return Optional.ofNullable(balance);
-    }
-
-    @Transactional
-    public void transfer(Integer fromWalletId, Integer toWalletId, BigDecimal amount, LocalDateTime createdAt) {
-        Optional<Wallet> fromOpt = findByWalletId(fromWalletId);
-        Optional<Wallet> toOpt = findByWalletId(toWalletId);
-
-        if (fromOpt.isEmpty() || toOpt.isEmpty()) {
-            throw new IllegalArgumentException("One or both wallets not found.");
-        }
-
-        Wallet fromWallet = fromOpt.get();
-        Wallet toWallet = toOpt.get();
-
-        if (fromWallet.getBalance().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds in sender's wallet.");
-        }
-
-        // Debit sender
-        BigDecimal newSenderBalance = fromWallet.getBalance().subtract(amount);
-        updateSenderWalletBalance(fromWalletId, newSenderBalance);
-
-        // Credit receiver
-        BigDecimal newReceiverBalance = toWallet.getBalance().add(amount);
-        updateReceiverWalletBalance(toWalletId, newReceiverBalance);
-
-        // Log transaction
-        String logQuery = "INSERT INTO wallet_transfers (from_wallet_id, to_wallet_id, amount, created_at) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(logQuery, fromWalletId, toWalletId, amount, Timestamp.valueOf(createdAt));
-    }
-
-    private void updateSenderWalletBalance(Integer fromWalletId, BigDecimal newSenderBalance) {
-        String query = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
-        jdbcTemplate.update(query, newSenderBalance, fromWalletId);
-    }
-
-    private void updateReceiverWalletBalance(Integer toWalletId, BigDecimal newReceiverBalance) {
-        String query = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
-        jdbcTemplate.update(query, newReceiverBalance, toWalletId);
-    }
-
-    @Transactional
-    public void fundWallet(String shortCode, String commandID, String amountStr, String MSISDN, String billRefNumber, Integer walletId) throws IOException {
-        System.out.println("Funding wallet.../");
-
-        // Simulate mpesa payment
-        mpesaService.C2BSimulation(shortCode, commandID, amountStr, MSISDN, billRefNumber);
-
-        // convert amount string to number
-        double amount = Double.parseDouble(amountStr);
-
-        // Optional: get current balance first then add it
-        String selectQuery = "SELECT balance FROM wallets WHERE wallet_id = ?";
-        Double currentBalance = jdbcTemplate.queryForObject(selectQuery, new Object[]{walletId}, Double.class);
-
-        double newBalance = currentBalance + amount;
-
-        String updateQuery = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
-        jdbcTemplate.update(updateQuery, newBalance, walletId);
     }
 
     @Transactional
@@ -146,4 +91,5 @@ public class WalletRepository {
         String updateQuery = "UPDATE wallets SET balance = ? WHERE wallet_id = ?";
         jdbcTemplate.update(updateQuery, newBalance, walletId);
     }
+
 }

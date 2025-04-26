@@ -7,17 +7,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.sql.SQLException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
+import com.fintech.fintechapp.mapper.UserRowMapper;
 
 @Repository
 
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<User> rowMapper = new UserRowMapper();
 
     @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
@@ -25,12 +23,19 @@ public class UserRepository {
     }
 
     //Row mapper to map the resultSet to an User object
-    private RowMapper<User> userRowMapper = (rs, rowNum) -> {
+    private RowMapper<User> UserRowMapper = (rs, rowNum) -> {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));
-        user.setWalletBalance(rs.getBigDecimal("balance"));
         return user;
     };
+
+    public RowMapper<User> getUserRowMapper() {
+        return UserRowMapper;
+    }
+
+    public void setUserRowMapper(RowMapper<User> userRowMapper) {
+        UserRowMapper = userRowMapper;
+    }
 
     public User createUser(User user) {
         String query = "INSERT INTO users (first_name, last_name, user_email, phone, currency) VALUES (?, ?, ?, ?, ?)";
@@ -46,29 +51,22 @@ public class UserRepository {
     // Find user by user_id
     public Optional<User> findByUserId(Integer userId) {
         String query = "SELECT wallets FROM users WHERE user_id = ?";
-        List<User> users = jdbcTemplate.query(query, userRowMapper, userId);
+        List<User> users = jdbcTemplate.query(query, UserRowMapper, userId);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
 
-    // Get users balance
-    public Optional<BigDecimal> findUserBalance(BigDecimal balance) {
-        String query = "SELECT balance FROM wallets WHERE user_id = ?";
-        BigDecimal = jdbcTemplate.queryForObject(query, BigDecimal.class, balance);
-        return Optional.ofNullable(balance);
-    }
-
-
     // get user by name
-    public Optional<User> findByFirstName(String firstName) {
+    public Optional<User> findByName(String firstName) {
         String query = "SELECT wallets FROM users WHERE firstName = ?";
-        List<User> users = jdbcTemplate.query(query, userRowMapper, firstName);
+        List<User> users = jdbcTemplate.query(query, UserRowMapper, firstName);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
     
     // get user by email
     public Optional<User> findByEmail(String email) {
         String query = "SELECT wallets FROM users WHERE user_email = ?";
-        List<User> users = jdbcTemplate.query(query, userRowMapper, email);
+        List<User> users = jdbcTemplate.query(query, UserRowMapper, email);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
+
 }

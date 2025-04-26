@@ -2,7 +2,9 @@ package com.fintech.fintechapp.controller;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.math.BigDecimal;
 
+import com.fintech.fintechapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import com.fintech.fintechapp.model.Wallet;
 import com.fintech.fintechapp.model.Transaction;
+
 import com.fintech.fintechapp.service.WalletService;
 
 @RestController
@@ -30,16 +33,16 @@ public class WalletController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdWallet);
     }
 
-    @GetMapping("/api/wallets/{wallet_id}")
-    public ResponseEntity<Wallet> getWallet(@PathVariable Integer walletId) {
-        Wallet wallet = walletService.getWalletById(walletId);
-        return ResponseEntity.ok(wallet);
+    @GetMapping("/api/wallets/{walletId}")
+    public ResponseEntity<Wallet> getWalletById(@PathVariable Integer walletId) {
+        return walletService.getWalletById(walletId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-
     @GetMapping("/api/wallets/{wallet_id}/balance")
-    public ResponseEntity<Double> checkBalance(@PathVariable Long walletId) {
-        Optional<Double> balance = walletService.getWalletBalance(walletId);
+    public ResponseEntity<Wallet> checkBalance(@PathVariable BigDecimal amount) {
+        Optional<Wallet> balance = walletService.getWalletBalance(amount);
         return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
@@ -49,9 +52,10 @@ public class WalletController {
         String commandID,
         String amount,
         String MSISDN,
-        String billRefNumber
+        String billRefNumber,
+        Integer walletId
     ) throws IOException {
-        Transaction txn = walletService.fundWallet(shortCode, commandID, amount, MSISDN, billRefNumber);
+        Transaction txn = walletService.creditWallet(shortCode, commandID, amount, MSISDN, billRefNumber, walletId);
         return ResponseEntity.ok(txn);
     }
 
