@@ -3,20 +3,18 @@ package com.fintech.fintechapp.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Map;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.fintech.fintechapp.model.Transaction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fintech.fintechapp.model.Wallet;
-import com.fintech.fintechapp.model.Transaction;
 import com.fintech.fintechapp.payment.MpesaService;
 import com.fintech.fintechapp.repository.WalletRepository;
-import com.fintech.fintechapp.repository.TransactionRepository;
 
 
 @Service // Annotation:: Wallet service, handles the business logic
@@ -43,7 +41,7 @@ public class WalletService {
                 .orElseThrow(() -> new RuntimeException("Wallet not found"));
     }
 
-    public Optional<Wallet> getWalletBalance(BigDecimal amount) {
+    public Optional<BigDecimal> getWalletBalance(BigDecimal amount) {
         return walletRepository.findWalletBalance(amount);
     }
 
@@ -94,7 +92,7 @@ public class WalletService {
     }
 
     @Transactional
-    public void creditWallet(String shortCode, String commandID, String amountStr, String MSISDN, String billRefNumber, Integer walletId) throws IOException {
+    public Transaction creditWallet(String shortCode, String commandID, String amountStr, String MSISDN, String billRefNumber, Integer walletId) throws IOException {
         System.out.println("Funding wallet...");
 
         // Simulate payment
@@ -115,18 +113,19 @@ public class WalletService {
         // Log transaction: Since you're funding the wallet, there's no 'to_wallet_id'
         String logQuery = "INSERT INTO wallet_transfers (from_wallet_id, amount, created_at, mobile_number) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(logQuery, null, amount, Timestamp.valueOf(LocalDateTime.now()), MSISDN); // MSISDN is the recipient (mobile number)
+        return null;
     }
 
     @Transactional
-    public void debitWallet(String initiatorName, String securityCredential, String commandID,
-                            String amountStr, String partyA, String partyB, String remarks,
-                            String queueTimeOutURL, String resultURL, String occasion, Integer walletId) throws IOException {
+    public Transaction debitWallet(String initiatorName, String securityCredential, String commandID,
+                                   String amountStr, String partyA, String partyB, String remarks,
+                                   String queueTimeOutURL, String resultURL, String occasion) throws IOException {
 
         System.out.println("Processing withdrawal request...");
 
         BigDecimal amount = new BigDecimal(amountStr);
 
-        Wallet wallet = walletRepository.findByWalletId(walletId)
+        Wallet wallet = walletRepository.findByWalletId(Integer walletId)
                 .orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
 
         if (wallet.getBalance().compareTo(amount) < 0) {
@@ -152,6 +151,7 @@ public class WalletService {
         } catch (Exception e) {
             throw new IOException("M-Pesa withdrawal failed. Wallet not debited.", e);
         }
+        return null;
     }
 
 }

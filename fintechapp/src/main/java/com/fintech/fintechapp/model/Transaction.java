@@ -16,7 +16,7 @@ public class Transaction {
     private String transactionId; // Unique user-facing transaction reference
 
     @Column(nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @ManyToOne
     @JoinColumn(name = "sender_wallet_id")
@@ -78,11 +78,11 @@ public class Transaction {
         this.transactionId = transactionId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

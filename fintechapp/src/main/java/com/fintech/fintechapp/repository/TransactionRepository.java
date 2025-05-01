@@ -26,7 +26,7 @@ public class TransactionRepository {
     //Row mapper to map the result set to a Transaction object
     private RowMapper<Transaction> TransactionRowMapper = (rs, rowNum) -> {
         Transaction transaction = new Transaction();
-        transaction.setId(rs.getLong("id"));
+        transaction.setId(rs.getString("id"));
         transaction.setTransactionId(rs.getString("transaction_id"));
         transaction.setAmount(rs.getBigDecimal("amount"));
         return transaction;

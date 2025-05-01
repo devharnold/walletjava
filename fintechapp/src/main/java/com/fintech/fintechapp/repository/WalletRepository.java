@@ -20,7 +20,7 @@ import com.fintech.fintechapp.mapper.WalletRowMapper;
 
 @Repository
 public class WalletRepository {
-    private static final JdbcTemplate jdbcTemplate;
+    private static JdbcTemplate jdbcTemplate = null;
     private final RowMapper<Wallet> rowMapper = new WalletRowMapper();
 
     @Autowired
@@ -68,14 +68,14 @@ public class WalletRepository {
         });
     }
 
-    public static int updateWalletBalanceWithVersion(Integer walletId, BigDecimal newBalance, int currentVersion) {
+    public static int updateWalletBalanceWithVersion(Integer walletId, BigDecimal newBalance, Integer currentVersion) {
         String sql = "UPDATE wallets SET balance = ?, version = version + 1 WHERE wallet_id = ? AND version = ?";
         return jdbcTemplate.update(sql, newBalance, walletId, currentVersion);
     }
 
     public Optional<BigDecimal> findWalletBalance(BigDecimal balance) {
         String query = "SELECT balance FROM wallets WHERE wallet_id = ?";
-        BigDecimal balance = jdbcTemplate.queryForObject(query, BigDecimal.class, balance);
+        BigDecimal amount = jdbcTemplate.queryForObject(query, BigDecimal.class, balance);
         return Optional.ofNullable(balance);
     }
 

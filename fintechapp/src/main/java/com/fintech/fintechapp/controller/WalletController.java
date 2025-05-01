@@ -27,7 +27,7 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
-    @PostMapping
+    @PostMapping("/api/wallets/create-wallet")
     public ResponseEntity<Wallet> createWallet(@RequestBody Wallet wallet) {
         Wallet createdWallet = walletService.createWallet(wallet);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdWallet);
@@ -41,8 +41,8 @@ public class WalletController {
     }
 
     @GetMapping("/api/wallets/{wallet_id}/balance")
-    public ResponseEntity<Wallet> checkBalance(@PathVariable BigDecimal amount) {
-        Optional<Wallet> balance = walletService.getWalletBalance(amount);
+    public ResponseEntity<BigDecimal> checkBalance(@PathVariable BigDecimal amount) {
+        Optional<BigDecimal> balance = walletService.getWalletBalance(amount);
         return balance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
